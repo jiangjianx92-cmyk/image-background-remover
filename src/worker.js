@@ -5,6 +5,11 @@
 
 export default {
   async fetch(request, env, ctx) {
+    // Handle GET requests - serve frontend
+    if (request.method === 'GET') {
+      return env.ASSETS.fetch(request);
+    }
+
     // Handle CORS preflight
     if (request.method === 'OPTIONS') {
       return new Response(null, {

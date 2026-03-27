@@ -1,7 +1,8 @@
 name = "image-background-remover"
 main = "src/worker.js"
 compatibility_date = "2024-01-01"
+assets = { directory = "public" }
 
 [vars]
 # Set your Remove.bg API key here or via environment variable
-REMOVE_BG_API_KEY = ""
+REMOVE_BG_API_KEY = "D3aUftEVCyy4YiKopZjMCn9B"
