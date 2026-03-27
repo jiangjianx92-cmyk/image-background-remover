@@ -3,124 +3,254 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Background Remover</title>
+  <title>Magic Eraser - Remove Image Background</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    .drop-zone.drag-over {
-      border-color: #3b82f6;
-      background-color: #eff6ff;
+    * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+    
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      min-height: 100vh;
     }
-    .hidden { display: none; }
+    
+    .glass {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    
+    .drop-zone {
+      border: 2px dashed rgba(102, 126, 234, 0.4);
+      transition: all 0.3s ease;
+    }
+    
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: #667eea;
+      background: rgba(102, 126, 234, 0.08);
+      transform: scale(1.01);
+    }
+    
+    .drop-zone.drag-over {
+      animation: pulse 1s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4); }
+      50% { box-shadow: 0 0 0 15px rgba(102, 126, 234, 0); }
+    }
+    
     .checkerboard {
       background-image: 
-        linear-gradient(45deg, #ccc 25%, transparent 25%), 
-        linear-gradient(-45deg, #ccc 25%, transparent 25%), 
-        linear-gradient(45deg, transparent 75%, #ccc 75%), 
-        linear-gradient(-45deg, transparent 75%, #ccc 75%);
-      background-size: 20px 20px;
-      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        linear-gradient(45deg, #e0e0e0 25%, transparent 25%), 
+        linear-gradient(-45deg, #e0e0e0 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #e0e0e0 75%), 
+        linear-gradient(-45deg, transparent 75%, #e0e0e0 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
     }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 40px rgba(56, 239, 125, 0.4);
+    }
+    
+    .spinner {
+      border: 3px solid rgba(102, 126, 234, 0.2);
+      border-top-color: #667eea;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease forwards;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .image-container {
+      transition: transform 0.3s ease;
+    }
+    
+    .image-container:hover {
+      transform: scale(1.02);
+    }
+    
+    .icon-float {
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    .hidden { display: none; }
   </style>
 </head>
-<body class="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+<body class="min-h-screen flex items-center justify-center p-4 md:p-8">
   
-  <div class="max-w-2xl w-full">
-    <!-- Header -->
-    <div class="text-center mb-8">
-      <h1 class="text-4xl font-bold text-gray-900 mb-2">🪄 Image Background Remover</h1>
-      <p class="text-gray-600">Upload an image and remove its background instantly</p>
-    </div>
-
-    <!-- Upload Zone -->
-    <div 
-      id="dropZone" 
-      class="drop-zone border-4 border-dashed border-gray-300 rounded-2xl p-12 text-center cursor-pointer hover:border-blue-500 hover:bg-white transition-all duration-200 bg-white"
-    >
-      <input type="file" id="fileInput" accept="image/*" class="hidden">
+  <!-- Decorative Elements -->
+  <div class="fixed top-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+  <div class="fixed bottom-0 right-0 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
+  
+  <div class="w-full max-w-3xl relative z-10">
+    <!-- Main Card -->
+    <div class="glass rounded-3xl shadow-2xl overflow-hidden">
       
-      <div id="uploadPrompt">
-        <div class="text-6xl mb-4">📤</div>
-        <p class="text-lg text-gray-700 mb-2">Drag & drop your image here</p>
-        <p class="text-gray-500">or click to browse</p>
-        <p class="text-sm text-gray-400 mt-4">Supports: JPG, PNG, WebP</p>
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-purple-600 via-purple-500 to-pink-500 p-8 text-center">
+        <div class="icon-float text-6xl mb-4">✨</div>
+        <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">Magic Eraser</h1>
+        <p class="text-white/80 text-lg">Remove image backgrounds instantly with AI</p>
       </div>
-
-      <div id="previewContainer" class="hidden">
-        <div class="mb-4">
-          <p class="text-sm text-gray-500 mb-2">Original Image:</p>
-          <img id="previewImage" class="max-h-64 mx-auto rounded-lg shadow-md" alt="Preview">
-        </div>
-      </div>
-    </div>
-
-    <!-- Process Button -->
-    <div class="text-center mt-6">
-      <button 
-        id="processBtn" 
-        class="hidden bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        ✨ Remove Background
-      </button>
-    </div>
-
-    <!-- Loading Spinner -->
-    <div id="loading" class="hidden text-center mt-8">
-      <div class="inline-block w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
-      <p class="text-gray-600">Processing your image...</p>
-    </div>
-
-    <!-- Result Section -->
-    <div id="resultSection" class="hidden mt-8">
-      <div class="bg-white rounded-2xl shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">✨ Result</h3>
-        
-        <!-- Before/After Comparison -->
-        <div class="flex gap-4 justify-center items-center">
-          <div class="text-center">
-            <p class="text-xs text-gray-500 mb-2">Original</p>
-            <div class="checkerboard rounded-lg overflow-hidden">
-              <img id="resultOriginal" class="max-h-64 max-w-full" alt="Original">
+      
+      <!-- Upload Section -->
+      <div class="p-8">
+        <!-- Drop Zone -->
+        <div 
+          id="dropZone" 
+          class="drop-zone rounded-2xl p-12 text-center cursor-pointer bg-gray-50/50"
+        >
+          <input type="file" id="fileInput" accept="image/*" class="hidden">
+          
+          <div id="uploadPrompt">
+            <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
+              <svg class="w-10 h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <p class="text-xl font-medium text-gray-700 mb-2">Drop your image here</p>
+            <p class="text-gray-500 mb-4">or click to browse files</p>
+            <div class="flex items-center justify-center gap-2 text-sm text-gray-400">
+              <span class="px-3 py-1 bg-gray-100 rounded-full">JPG</span>
+              <span class="px-3 py-1 bg-gray-100 rounded-full">PNG</span>
+              <span class="px-3 py-1 bg-gray-100 rounded-full">WebP</span>
             </div>
           </div>
-          
-          <div class="text-3xl text-gray-400">→</div>
-          
-          <div class="text-center">
-            <p class="text-xs text-gray-500 mb-2">No Background</p>
-            <div class="checkerboard rounded-lg overflow-hidden">
-              <img id="resultImage" class="max-h-64 max-w-full" alt="Result">
-            </div>
+
+          <div id="previewContainer" class="hidden">
+            <p class="text-sm text-gray-500 mb-3">Preview</p>
+            <img id="previewImage" class="max-h-72 mx-auto rounded-xl shadow-lg" alt="Preview">
           </div>
         </div>
 
-        <!-- Download Button -->
+        <!-- Process Button -->
         <div class="text-center mt-6">
           <button 
-            id="downloadBtn"
-            class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200"
+            id="processBtn" 
+            class="btn-primary hidden text-white font-semibold px-10 py-4 rounded-2xl text-lg"
           >
-            ⬇️ Download Image
+            <span class="flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+              Remove Background
+            </span>
           </button>
         </div>
 
-        <!-- Try Another -->
-        <div class="text-center mt-4">
-          <button 
-            id="resetBtn"
-            class="text-gray-500 hover:text-gray-700 underline text-sm"
-          >
-            Process another image
-          </button>
+        <!-- Loading -->
+        <div id="loading" class="hidden text-center mt-8">
+          <div class="spinner w-14 h-14 rounded-full mx-auto mb-4"></div>
+          <p class="text-gray-600 font-medium">Magic happening...</p>
+          <p class="text-gray-400 text-sm mt-1">This usually takes a few seconds</p>
         </div>
+
+        <!-- Result Section -->
+        <div id="resultSection" class="hidden fade-in mt-8">
+          <div class="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 border border-gray-100">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-bold text-gray-800">Result</h3>
+              <span class="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">✓ Success</span>
+            </div>
+            
+            <!-- Comparison -->
+            <div class="flex flex-col md:flex-row gap-6 justify-center items-center">
+              <div class="text-center flex-1 w-full">
+                <p class="text-xs text-gray-500 mb-2 uppercase tracking-wide">Original</p>
+                <div class="image-container rounded-xl overflow-hidden shadow-md">
+                  <img id="resultOriginal" class="max-h-64 mx-auto" alt="Original">
+                </div>
+              </div>
+              
+              <div class="flex items-center justify-center">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-xl">
+                  →
+                </div>
+              </div>
+              
+              <div class="text-center flex-1 w-full">
+                <p class="text-xs text-gray-500 mb-2 uppercase tracking-wide">Background Removed</p>
+                <div class="image-container checkerboard rounded-xl overflow-hidden shadow-md">
+                  <img id="resultImage" class="max-h-64 mx-auto" alt="Result">
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+              <button 
+                id="downloadBtn"
+                class="btn-secondary flex items-center justify-center gap-2 text-white font-semibold px-8 py-3 rounded-2xl"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                </svg>
+                Download Image
+              </button>
+              
+              <button 
+                id="resetBtn"
+                class="px-8 py-3 rounded-2xl border-2 border-gray-200 text-gray-600 font-medium hover:bg-gray-50 transition-colors"
+              >
+                Try Another Image
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="hidden mt-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-center"></div>
+      </div>
+      
+      <!-- Footer -->
+      <div class="bg-gray-50 px-8 py-4 text-center border-t border-gray-100">
+        <p class="text-gray-400 text-sm">
+          Powered by <a href="https://www.remove.bg" target="_blank" class="text-purple-600 hover:underline font-medium">remove.bg</a> 
+          & <a href="https://workers.cloudflare.com" target="_blank" class="text-orange-500 hover:underline font-medium">Cloudflare</a>
+        </p>
       </div>
     </div>
-
-    <!-- Error Message -->
-    <div id="errorMessage" class="hidden mt-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-center"></div>
-
-    <!-- Footer -->
-    <div class="text-center mt-12 text-gray-400 text-sm">
-      <p>Powered by <a href="https://www.remove.bg" target="_blank" class="text-blue-500 hover:underline">remove.bg</a> & <a href="https://workers.cloudflare.com" target="_blank" class="text-orange-500 hover:underline">Cloudflare Workers</a></p>
+    
+    <!-- Feature Tags -->
+    <div class="flex flex-wrap justify-center gap-3 mt-8">
+      <span class="px-4 py-2 bg-white/20 backdrop-blur text-white text-sm rounded-full">🎯 AI-Powered</span>
+      <span class="px-4 py-2 bg-white/20 backdrop-blur text-white text-sm rounded-full">⚡ Fast Processing</span>
+      <span class="px-4 py-2 bg-white/20 backdrop-blur text-white text-sm rounded-full">🔒 Private & Secure</span>
+      <span class="px-4 py-2 bg-white/20 backdrop-blur text-white text-sm rounded-full">💎 High Quality</span>
     </div>
   </div>
 
@@ -196,6 +326,7 @@
       processBtn.disabled = true;
       loading.classList.remove('hidden');
       errorMessage.classList.add('hidden');
+      resultSection.classList.add('hidden');
 
       try {
         const formData = new FormData();
