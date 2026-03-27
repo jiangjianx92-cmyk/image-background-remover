@@ -107,7 +107,55 @@
       50% { transform: translateY(-10px); }
     }
     
+    .lang-btn {
+      transition: all 0.2s ease;
+    }
+    
+    .lang-btn:hover {
+      transform: scale(1.05);
+    }
+    
+    .lang-btn.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
     .hidden { display: none; }
+    
+    .dropdown {
+      position: relative;
+    }
+    
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 0.5rem;
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      overflow: hidden;
+      z-index: 50;
+      min-width: 160px;
+    }
+    
+    .dropdown-item {
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .dropdown-item:hover {
+      background: #f3f4f6;
+    }
+    
+    .dropdown-item.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
   </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4 md:p-8">
@@ -121,10 +169,37 @@
     <div class="glass rounded-3xl shadow-2xl overflow-hidden">
       
       <!-- Header -->
-      <div class="bg-gradient-to-r from-purple-600 via-purple-500 to-pink-500 p-8 text-center">
+      <div class="bg-gradient-to-r from-purple-600 via-purple-500 to-pink-500 p-8 text-center relative">
+        <!-- Language Selector -->
+        <div class="dropdown absolute top-4 right-4">
+          <button id="langBtn" class="lang-btn flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-full text-white text-sm font-medium">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
+            </svg>
+            <span id="currentLang">English</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div id="langDropdown" class="dropdown-menu hidden">
+            <div class="p-2">
+              <div class="dropdown-item lang-option active" data-lang="en">🇬🇧 English</div>
+              <div class="dropdown-item lang-option" data-lang="zh">🇨🇳 简体中文</div>
+              <div class="dropdown-item lang-option" data-lang="ja">🇯🇵 日本語</div>
+              <div class="dropdown-item lang-option" data-lang="ko">🇰🇷 한국어</div>
+              <div class="dropdown-item lang-option" data-lang="es">🇪🇸 Español</div>
+              <div class="dropdown-item lang-option" data-lang="fr">🇫🇷 Français</div>
+              <div class="dropdown-item lang-option" data-lang="de">🇩🇪 Deutsch</div>
+              <div class="dropdown-item lang-option" data-lang="pt">🇧🇷 Português</div>
+              <div class="dropdown-item lang-option" data-lang="ru">🇷🇺 Русский</div>
+              <div class="dropdown-item lang-option" data-lang="ar">🇸🇦 العربية</div>
+            </div>
+          </div>
+        </div>
+        
         <div class="icon-float text-6xl mb-4">✨</div>
-        <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">Magic Eraser</h1>
-        <p class="text-white/80 text-lg">Remove image backgrounds instantly with AI</p>
+        <h1 class="text-3xl md:text-4xl font-bold text-white mb-2" data-i18n="title">Magic Eraser</h1>
+        <p class="text-white/80 text-lg" data-i18n="subtitle">Remove image backgrounds instantly with AI</p>
       </div>
       
       <!-- Upload Section -->
@@ -142,8 +217,8 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
               </svg>
             </div>
-            <p class="text-xl font-medium text-gray-700 mb-2">Drop your image here</p>
-            <p class="text-gray-500 mb-4">or click to browse files</p>
+            <p class="text-xl font-medium text-gray-700 mb-2" data-i18n="dropText">Drop your image here</p>
+            <p class="text-gray-500 mb-4" data-i18n="orClick">or click to browse files</p>
             <div class="flex items-center justify-center gap-2 text-sm text-gray-400">
               <span class="px-3 py-1 bg-gray-100 rounded-full">JPG</span>
               <span class="px-3 py-1 bg-gray-100 rounded-full">PNG</span>
@@ -152,7 +227,7 @@
           </div>
 
           <div id="previewContainer" class="hidden">
-            <p class="text-sm text-gray-500 mb-3">Preview</p>
+            <p class="text-sm text-gray-500 mb-3" data-i18n="preview">Preview</p>
             <img id="previewImage" class="max-h-72 mx-auto rounded-xl shadow-lg" alt="Preview">
           </div>
         </div>
@@ -167,7 +242,7 @@
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
               </svg>
-              Remove Background
+              <span data-i18n="removeBtn">Remove Background</span>
             </span>
           </button>
         </div>
@@ -175,22 +250,22 @@
         <!-- Loading -->
         <div id="loading" class="hidden text-center mt-8">
           <div class="spinner w-14 h-14 rounded-full mx-auto mb-4"></div>
-          <p class="text-gray-600 font-medium">Magic happening...</p>
-          <p class="text-gray-400 text-sm mt-1">This usually takes a few seconds</p>
+          <p class="text-gray-600 font-medium" data-i18n="processing">Magic happening...</p>
+          <p class="text-gray-400 text-sm mt-1" data-i18n="processingHint">This usually takes a few seconds</p>
         </div>
 
         <!-- Result Section -->
         <div id="resultSection" class="hidden fade-in mt-8">
           <div class="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 border border-gray-100">
             <div class="flex items-center justify-between mb-4">
-              <h3 class="text-lg font-bold text-gray-800">Result</h3>
-              <span class="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">✓ Success</span>
+              <h3 class="text-lg font-bold text-gray-800" data-i18n="result">Result</h3>
+              <span class="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">✓ <span data-i18n="success">Success</span></span>
             </div>
             
             <!-- Comparison -->
             <div class="flex flex-col md:flex-row gap-6 justify-center items-center">
               <div class="text-center flex-1 w-full">
-                <p class="text-xs text-gray-500 mb-2 uppercase tracking-wide">Original</p>
+                <p class="text-xs text-gray-500 mb-2 uppercase tracking-wide" data-i18n="original">Original</p>
                 <div class="image-container rounded-xl overflow-hidden shadow-md">
                   <img id="resultOriginal" class="max-h-64 mx-auto" alt="Original">
                 </div>
@@ -203,7 +278,7 @@
               </div>
               
               <div class="text-center flex-1 w-full">
-                <p class="text-xs text-gray-500 mb-2 uppercase tracking-wide">Background Removed</p>
+                <p class="text-xs text-gray-500 mb-2 uppercase tracking-wide" data-i18n="noBackground">Background Removed</p>
                 <div class="image-container checkerboard rounded-xl overflow-hidden shadow-md">
                   <img id="resultImage" class="max-h-64 mx-auto" alt="Result">
                 </div>
@@ -219,14 +294,14 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                 </svg>
-                Download Image
+                <span data-i18n="download">Download Image</span>
               </button>
               
               <button 
                 id="resetBtn"
                 class="px-8 py-3 rounded-2xl border-2 border-gray-200 text-gray-600 font-medium hover:bg-gray-50 transition-colors"
               >
-                Try Another Image
+                <span data-i18n="tryAnother">Try Another Image</span>
               </button>
             </div>
           </div>
@@ -239,7 +314,7 @@
       <!-- Footer -->
       <div class="bg-gray-50 px-8 py-4 text-center border-t border-gray-100">
         <p class="text-gray-400 text-sm">
-          Powered by <a href="https://www.remove.bg" target="_blank" class="text-purple-600 hover:underline font-medium">remove.bg</a> 
+          <span data-i18n="poweredBy">Powered by</span> <a href="https://www.remove.bg" target="_blank" class="text-purple-600 hover:underline font-medium">remove.bg</a> 
           & <a href="https://workers.cloudflare.com" target="_blank" class="text-orange-500 hover:underline font-medium">Cloudflare</a>
         </p>
       </div>
@@ -248,13 +323,271 @@
     <!-- Feature Tags -->
     <div class="flex flex-wrap justify-center gap-3 mt-8">
       <span class="px-4 py-2 bg-white/20 backdrop-blur text-white text-sm rounded-full">🎯 AI-Powered</span>
-      <span class="px-4 py-2 bg-white/20 backdrop-blur text-white text-sm rounded-full">⚡ Fast Processing</span>
-      <span class="px-4 py-2 bg-white/20 backdrop-blur text-white text-sm rounded-full">🔒 Private & Secure</span>
-      <span class="px-4 py-2 bg-white/20 backdrop-blur text-white text-sm rounded-full">💎 High Quality</span>
+      <span class="px-4 py-2 bg-white/20 backdrop-blur text-white text-sm rounded-full">⚡ <span data-i18n="fastProcessing">Fast Processing</span></span>
+      <span class="px-4 py-2 bg-white/20 backdrop-blur text-white text-sm rounded-full">🔒 <span data-i18n="privateSecure">Private & Secure</span></span>
+      <span class="px-4 py-2 bg-white/20 backdrop-blur text-white text-sm rounded-full">💎 <span data-i18n="highQuality">High Quality</span></span>
     </div>
   </div>
 
   <script>
+    // Translations
+    const translations = {
+      en: {
+        title: 'Magic Eraser',
+        subtitle: 'Remove image backgrounds instantly with AI',
+        dropText: 'Drop your image here',
+        orClick: 'or click to browse files',
+        preview: 'Preview',
+        removeBtn: 'Remove Background',
+        processing: 'Magic happening...',
+        processingHint: 'This usually takes a few seconds',
+        result: 'Result',
+        success: 'Success',
+        original: 'Original',
+        noBackground: 'Background Removed',
+        download: 'Download Image',
+        tryAnother: 'Try Another Image',
+        poweredBy: 'Powered by',
+        fastProcessing: 'Fast Processing',
+        privateSecure: 'Private & Secure',
+        highQuality: 'High Quality'
+      },
+      zh: {
+        title: '魔法橡皮擦',
+        subtitle: '使用 AI 瞬间移除图片背景',
+        dropText: '拖放图片到这里',
+        orClick: '或点击浏览文件',
+        preview: '预览',
+        removeBtn: '移除背景',
+        processing: '魔法进行中...',
+        processingHint: '通常需要几秒钟',
+        result: '结果',
+        success: '成功',
+        original: '原图',
+        noBackground: '背景已移除',
+        download: '下载图片',
+        tryAnother: '处理另一张图片',
+        poweredBy: '技术支持',
+        fastProcessing: '快速处理',
+        privateSecure: '隐私安全',
+        highQuality: '高清质量'
+      },
+      ja: {
+        title: 'マジック消しゴム',
+        subtitle: 'AIで画像から背景を即座に削除',
+        dropText: '画像をここにドロップ',
+        orClick: 'またはクリックして参照',
+        preview: 'プレビュー',
+        removeBtn: '背景を削除',
+        processing: '魔法が発生中...',
+        processingHint: '通常は数秒かかります',
+        result: '結果',
+        success: '成功',
+        original: 'オリジナル',
+        noBackground: '背景削除済み',
+        download: '画像をダウンロード',
+        tryAnother: '別の画像を試す',
+        poweredBy: 'Powered by',
+        fastProcessing: '高速処理',
+        privateSecure: 'プライバシーとセキュリティ',
+        highQuality: '高品質'
+      },
+      ko: {
+        title: '매직 지우개',
+        subtitle: 'AI로 이미지 배경 즉시 제거',
+        dropText: '여기에 이미지를 놓으세요',
+        orClick: '또는 클릭하여 파일 찾기',
+        preview: '미리보기',
+        removeBtn: '배경 제거',
+        processing: '마법正在进行中...',
+        processingHint: '일반적으로 몇 초가 걸립니다',
+        result: '결과',
+        success: '성공',
+        original: '원본',
+        noBackground: '배경 제거됨',
+        download: '이미지 다운로드',
+        tryAnother: '다른 이미지 시도',
+        poweredBy: ' Powered by',
+        fastProcessing: '빠른 처리',
+        privateSecure: '개인정보 보호',
+        highQuality: '고품질'
+      },
+      es: {
+        title: 'Borrador Mágico',
+        subtitle: 'Eliminar fondos de imágenes al instante con IA',
+        dropText: 'Suelta tu imagen aquí',
+        orClick: 'o haz clic para buscar archivos',
+        preview: 'Vista previa',
+        removeBtn: 'Eliminar Fondo',
+        processing: 'Magia sucediendo...',
+        processingHint: 'Esto suele tardar unos segundos',
+        result: 'Resultado',
+        success: 'Éxito',
+        original: 'Original',
+        noBackground: 'Fondo Eliminado',
+        download: 'Descargar Imagen',
+        tryAnother: 'Probar Otra Imagen',
+        poweredBy: 'Desarrollado por',
+        fastProcessing: 'Procesamiento Rápido',
+        privateSecure: 'Privado y Seguro',
+        highQuality: 'Alta Calidad'
+      },
+      fr: {
+        title: 'Gomme Magique',
+        subtitle: 'Supprimer les arrière-plans d\'images instantanément avec l\'IA',
+        dropText: 'Déposez votre image ici',
+        orClick: 'ou cliquez pour parcourir',
+        preview: 'Aperçu',
+        removeBtn: 'Supprimer le Fond',
+        processing: 'Magie en cours...',
+        processingHint: 'Cela prend généralement quelques secondes',
+        result: 'Résultat',
+        success: 'Succès',
+        original: 'Original',
+        noBackground: 'Fond Supprimé',
+        download: 'Télécharger l\'Image',
+        tryAnother: 'Essayer Une Autre Image',
+        poweredBy: 'Propulsé par',
+        fastProcessing: 'Traitement Rapide',
+        privateSecure: 'Privé et Sécurisé',
+        highQuality: 'Haute Qualité'
+      },
+      de: {
+        title: 'Magischer Radierer',
+        subtitle: 'Hintergrund von Bildern sofort mit KI entfernen',
+        dropText: 'Bild hier ablegen',
+        orClick: 'oder klicken zum Durchsuchen',
+        preview: 'Vorschau',
+        removeBtn: 'Hintergrund Entfernen',
+        processing: 'Magie passiert...',
+        processingHint: 'Dies dauert normalerweise ein paar Sekunden',
+        result: 'Ergebnis',
+        success: 'Erfolg',
+        original: 'Original',
+        noBackground: 'Hintergrund Entfernt',
+        download: 'Bild Herunterladen',
+        tryAnother: 'Anderes Bild Versuchen',
+        poweredBy: 'Unterstützt von',
+        fastProcessing: 'Schnelle Verarbeitung',
+        privateSecure: 'Privat & Sicher',
+        highQuality: 'Hohe Qualität'
+      },
+      pt: {
+        title: 'Borracha Mágica',
+        subtitle: 'Remova fundos de imagens instantaneamente com IA',
+        dropText: 'Solte sua imagem aqui',
+        orClick: 'ou clique para procurar arquivos',
+        preview: 'Prévia',
+        removeBtn: 'Remover Fundo',
+        processing: 'Magia acontecendo...',
+        processingHint: 'Isso geralmente leva alguns segundos',
+        result: 'Resultado',
+        success: 'Sucesso',
+        original: 'Original',
+        noBackground: 'Fundo Removido',
+        download: 'Baixar Imagem',
+        tryAnother: 'Tentar Outra Imagem',
+        poweredBy: 'Desenvolvido por',
+        fastProcessing: 'Processamento Rápido',
+        privateSecure: 'Privado e Seguro',
+        highQuality: 'Alta Qualidade'
+      },
+      ru: {
+        title: 'Волшебный ластик',
+        subtitle: 'Мгновенное удаление фона изображений с помощью ИИ',
+        dropText: 'Перетащите изображение сюда',
+        orClick: 'или нажмите для выбора файла',
+        preview: 'Предпросмотр',
+        removeBtn: 'Удалить Фон',
+        processing: 'Магия происходит...',
+        processingHint: 'Обычно это занимает несколько секунд',
+        result: 'Результат',
+        success: 'Успешно',
+        original: 'Оригинал',
+        noBackground: 'Фон Удалён',
+        download: 'Скачать Изображение',
+        tryAnother: 'Попробовать Другое Изображение',
+        poweredBy: 'При поддержке',
+        fastProcessing: 'Быстрая Обработка',
+        privateSecure: 'Приватность и Безопасность',
+        highQuality: 'Высокое Качество'
+      },
+      ar: {
+        title: 'ممحاة سحرية',
+        subtitle: 'إزالة خلفيات الصور فوراً بالذكاء الاصطناعي',
+        dropText: 'أسقط صورتك هنا',
+        orClick: 'أو انقر للتصفح',
+        preview: 'معاينة',
+        removeBtn: 'إزالة الخلفية',
+        processing: 'الجواهر تحدث...',
+        processingHint: 'هذا عادة ما يستغرق بضع ثوان',
+        result: 'النتيجة',
+        success: 'نجاح',
+        original: 'الأصلي',
+        noBackground: 'تم إزالة الخلفية',
+        download: 'تحميل الصورة',
+        tryAnother: '尝试另一张图片',
+        poweredBy: 'مدعوم من',
+        fastProcessing: 'معالجة سريعة',
+        privateSecure: 'خاص وآمن',
+        highQuality: 'جودة عالية'
+      }
+    };
+
+    const langNames = {
+      en: 'English', zh: '简体中文', ja: '日本語', ko: '한국어',
+      es: 'Español', fr: 'Français', de: 'Deutsch', pt: 'Português',
+      ru: 'Русский', ar: 'العربية'
+    };
+
+    // Language handling
+    let currentLang = localStorage.getItem('language') || 'en';
+    
+    function setLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('language', lang);
+      
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang] && translations[lang][key]) {
+          el.textContent = translations[lang][key];
+        }
+      });
+      
+      document.getElementById('currentLang').textContent = langNames[lang];
+      
+      document.querySelectorAll('.lang-option').forEach(opt => {
+        opt.classList.remove('active');
+        if (opt.dataset.lang === lang) {
+          opt.classList.add('active');
+        }
+      });
+    }
+    
+    // Initialize language
+    setLanguage(currentLang);
+    
+    // Language dropdown toggle
+    const langBtn = document.getElementById('langBtn');
+    const langDropdown = document.getElementById('langDropdown');
+    
+    langBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      langDropdown.classList.toggle('hidden');
+    });
+    
+    document.addEventListener('click', () => {
+      langDropdown.classList.add('hidden');
+    });
+    
+    document.querySelectorAll('.lang-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        setLanguage(opt.dataset.lang);
+        langDropdown.classList.add('hidden');
+      });
+    });
+
+    // Original functionality
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
     const uploadPrompt = document.getElementById('uploadPrompt');
@@ -272,17 +605,12 @@
     let selectedFile = null;
     let resultBlob = null;
 
-    // Click to upload
     dropZone.addEventListener('click', () => fileInput.click());
 
-    // File selected via input
     fileInput.addEventListener('change', (e) => {
-      if (e.target.files.length > 0) {
-        handleFile(e.target.files[0]);
-      }
+      if (e.target.files.length > 0) handleFile(e.target.files[0]);
     });
 
-    // Drag and drop
     dropZone.addEventListener('dragover', (e) => {
       e.preventDefault();
       dropZone.classList.add('drag-over');
@@ -295,9 +623,7 @@
     dropZone.addEventListener('drop', (e) => {
       e.preventDefault();
       dropZone.classList.remove('drag-over');
-      if (e.dataTransfer.files.length > 0) {
-        handleFile(e.dataTransfer.files[0]);
-      }
+      if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
     });
 
     function handleFile(file) {
@@ -305,7 +631,6 @@
         showError('Please select an image file');
         return;
       }
-
       selectedFile = file;
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -319,19 +644,15 @@
       reader.readAsDataURL(file);
     }
 
-    // Process image
     processBtn.addEventListener('click', async () => {
       if (!selectedFile) return;
-
       processBtn.disabled = true;
       loading.classList.remove('hidden');
       errorMessage.classList.add('hidden');
-      resultSection.classList.add('hidden');
 
       try {
         const formData = new FormData();
         formData.append('image', selectedFile);
-
         const response = await fetch('/api/removebg', {
           method: 'POST',
           body: formData,
@@ -344,10 +665,8 @@
 
         resultBlob = await response.blob();
         const resultUrl = URL.createObjectURL(resultBlob);
-
         resultOriginal.src = previewImage.src;
         resultImage.src = resultUrl;
-
         loading.classList.add('hidden');
         resultSection.classList.remove('hidden');
       } catch (err) {
@@ -358,10 +677,8 @@
       }
     });
 
-    // Download result
     downloadBtn.addEventListener('click', () => {
       if (!resultBlob) return;
-
       const url = URL.createObjectURL(resultBlob);
       const a = document.createElement('a');
       a.href = url;
@@ -372,7 +689,6 @@
       URL.revokeObjectURL(url);
     });
 
-    // Reset
     resetBtn.addEventListener('click', () => {
       selectedFile = null;
       resultBlob = null;
